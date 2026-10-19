@@ -35,7 +35,7 @@ sudo make install
 to change the directory for installation
 
 ```
-PREFIX={path} make install
+make install PREFIX={path}
 ```
 
 ## Usage
