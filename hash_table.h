@@ -5,11 +5,15 @@
 extern "C" {
 #endif
 
-#include <string.h>                                                                                           /* Used only for memset. Maybe removed in future. */
 
-#define DEXH1_HASH_TABLE_SIZE 1024                                                                             /* Hash table size macros */
-#define DEXH1_INIT_HASH_TABLE(x) memset(&x.values, 0, sizeof(dexh1_http_field) * DEXH1_HASH_TABLE_SIZE); \
-                                 x.size = DEXH1_HASH_TABLE_SIZE;    /* Initialization hash table macros. */
+#include <stdlib.h>
+#include <string.h>
+
+
+#define DEXH1_HASH_TABLE_SIZE 128                                                                             /* Hash table size macros */
+#define DEXH1_INIT_HASH_TABLE(x) memset(&x.http, 0, DEXH1_HASH_TABLE_SIZE * sizeof(dexh1_http_field)); \
+	                         x.size = DEXH1_HASH_TABLE_SIZE;    /* Initialization hash table macros. */
+
 
 typedef struct
 {
@@ -22,8 +26,8 @@ typedef struct
 
 typedef struct
 {
-  dexh1_http_field values[DEXH1_HASH_TABLE_SIZE];    /* Array of http fields. */
-  int size;                                          /* Size of hash table for runtime usage. */
+  dexh1_http_field http[DEXH1_HASH_TABLE_SIZE];    /* Array of http fields. */
+  int size;                                           /* Size of hash table for runtime usage. */
 } dexh1_hash_table_t;
 
 dexh1_http_field dexh1_get_field(dexh1_hash_table_t* ht, char* name, int length);    /* Extracts field from hash table. */

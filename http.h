@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <string.h>
 #include "hash_table.h" /* Implements hash table functionality (inserting, extracting and deleting). */
 
 typedef struct

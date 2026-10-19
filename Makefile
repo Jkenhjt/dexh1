@@ -51,4 +51,4 @@ ${SHARED_LIB}: ${SRC}
 clean:
 	rm -rf *.o ./build
 
-.PHONY: all clean install uninstall
+.PHONY: all clean install uninstall test_*

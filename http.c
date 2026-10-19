@@ -1,15 +1,21 @@
 #include "http.h"
 
-__inline__ int dexh1_idx_delim(unsigned long data, int delim)
+
+int dexh1_idx_delim(void* pointer, int delim)
 {
   /* Fast search char without simd.
    * Using ctzll (count trailing zeros long long) function for count
-   * is char in unsigned long variable and on what position.
-   * Decreases count of loops, because scans 8 bytes per call
+   * is char in size_t variable and on what position.
+   * Decreases count of loops, because scans sizeof(size_t) bytes per call
    */
 
-  unsigned long mask_delim = (0x0101010101010101) * delim;
-  unsigned long result = data ^ mask_delim;
+  size_t mask_delim;
+  size_t result;
+  size_t data;
+  memcpy(&data, pointer, sizeof(size_t));
+
+  mask_delim = (0x0101010101010101) * delim;
+  result = data ^ mask_delim;
 
   result = (result - 0x0101010101010101) & ~result & 0x8080808080808080;
   
@@ -18,22 +24,22 @@ __inline__ int dexh1_idx_delim(unsigned long data, int delim)
     return -1;
   }
   
-  return __builtin_ctzll(result) / 8;
+  return __builtin_ctzll(result) / sizeof(size_t);
 }
 
-__inline__ int dexh1_length_field(char* buff, int length, char delim, int* idx, int* field_length)
+int dexh1_length_field(char* buff, int length, char delim, int* idx, int* field_length)
 {
-  int result = dexh1_idx_delim(*(unsigned long *)(&buff[*idx]), delim);
+  int result = dexh1_idx_delim(&buff[*idx], delim);
   for(; result == -1 && *field_length < length;
-	*idx += sizeof(unsigned long),
-	result = dexh1_idx_delim(*(unsigned long *)(&buff[*idx]), delim),
-	*field_length += sizeof(unsigned long))
+	*idx += sizeof(size_t),
+	result = dexh1_idx_delim(&buff[*idx], delim),
+	*field_length += sizeof(size_t))
   {}
 
   return result;
 }
 
-__inline__ void dexh1_method_request(dexh1_http* req, char* buff, int length)
+void dexh1_method_request(dexh1_http* req, char* buff, int length)
 {
   char* method;
   int method_length = 0;
@@ -98,7 +104,7 @@ __inline__ void dexh1_method_request(dexh1_http* req, char* buff, int length)
   dexh1_insert_field(&(req->ht), http_version_);
 }
 
-__inline__ void dexh1_method_response(dexh1_http** req, char* buff, int length)
+void dexh1_method_response(dexh1_http** req, char* buff, int length)
 {
   char* http_version;
   int http_version_length = 0;
@@ -171,19 +177,31 @@ void dexh1_find_fields(int headers_length, dexh1_http* req, char* buff)
   int value_length = 0;
   dexh1_http_field field_;
   
+  int result = 0;
   int i = 0;
-  for(i = 0; i < headers_length;)
+  while(i < headers_length)
   {
-    int result = dexh1_idx_delim(*((unsigned long *) &buff[i]), '\r');
-    if(result == -1)
+    result = dexh1_idx_delim(&buff[i], '\r');
+    if(headers_length - i > 8)
     {
-      i += sizeof(unsigned long);
-      continue;
+      if(result == -1)
+      {
+        i += sizeof(size_t);
+        continue;
+      }
+
+      i += result;
+    }
+    else
+    {
+      if(buff[i] != '\r')
+      {
+        i++;
+	continue;
+      }
     }
     
-    i += result;
-    
-    buff += 2;
+    i += 2;
     
     if(buff[i+1] == '\n')
     {
@@ -204,46 +222,43 @@ void dexh1_find_fields(int headers_length, dexh1_http* req, char* buff)
       break;
     }
 
-
     field = buff+i;
 
     field_length = i;
 
     for(; i < headers_length ;)
     {
-      result = dexh1_idx_delim(*((unsigned long *) &buff[i]), ':');
+      result = dexh1_idx_delim(&buff[i], ':');
       if(result != -1)
       {
         i += result;
 	break;
       }
       
-      i += sizeof(unsigned long);
+      i += sizeof(size_t);
     }
 
     field_length = i - field_length;
     
     i += 2;
  
-
     value = buff+i;
 
     value_length = i;
 
     for(; i < headers_length ;)
     {
-      result = dexh1_idx_delim(*((unsigned long *) &buff[i]), '\r');
+      result = dexh1_idx_delim(&buff[i], '\r');
       if(result != -1)
       {
         i += result;
 	break;
       }
       
-      i += sizeof(unsigned long);
+      i += sizeof(size_t);
     }
     
     value_length = i - value_length;
-    
 
     field_.name = field;
     field_.name_length = field_length;
