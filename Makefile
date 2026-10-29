@@ -2,8 +2,8 @@ LIBNAME =             dexh1
 STATIC_LIB :=         lib${LIBNAME}.a
 SHARED_LIB :=         lib${LIBNAME}.so
 
-SRC :=                $(wildcard *.c)
-SRC_HEADERS :=        $(wildcard *.h)
+SRC :=                $(wildcard src/*.c)
+SRC_HEADERS :=        $(wildcard src/*.h)
 OBJS :=               $(patsubst %.c, %.o, ${SRC})
 
 PREFIX :=             /usr/local
