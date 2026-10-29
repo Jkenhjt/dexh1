@@ -15,7 +15,12 @@ CFLAGS +=             -O3 -ffast-math
 SAFEFLAGS :=          -Wall -Werror -pedantic -std=iso9899:1990
 
 
-all: ${STATIC_LIB} ${SHARED_LIB} ${SRC_HEADERS}
+all: ${STATIC_LIB} ${SHARED_LIB} ${SRC_HEADERS} test
+
+test: ${STATIC_LIB}
+	${CC} ${LDFLAGS} ${CFLAGS} ${SAFEFLAGS} tests/test_request.c -ldexh1 -o test_request
+	./test_request
+	rm test_request
 
 install: ${STATIC_LIB} ${SHARED_LIB}
 	mkdir -p ${PREFIX}/include/${LIBNAME}
@@ -51,4 +56,4 @@ ${SHARED_LIB}: ${SRC}
 clean:
 	rm -rf *.o ./build
 
-.PHONY: all clean install uninstall test_*
+.PHONY: all clean install uninstall test*
