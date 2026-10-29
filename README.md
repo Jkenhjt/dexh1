@@ -32,10 +32,10 @@ make
 sudo make install
 ```
 
-### to change the directory for installation
+to change the directory for installation
 
 ```
-PREFIX={path} make install
+make install PREFIX={path}
 ```
 
 ## Usage
@@ -67,47 +67,4 @@ int main (int argc, char** argv) {
   printf("Path: %.*s\n", path.value_length, path.value);
 }
 
-```
-
-#### dexh1\_http
-
-```c
-typedef struct
-{
-  dexh1_hash_table_t ht;
-} dexh1_http;
-```
-
-#### dexh1\_hash\_table\_t
-
-```c
-typedef struct
-{
-  dexh1_http_field values[DEXH1_HASH_TABLE_SIZE]; /* By default, DEXH1_HASH_TABLE_SIZE = 100.
-                                                   * Changing that value affects collision and
-                                                   * memory usage of the library.
-                                                   */
-  int size;
-} dexh1_hash_table_t;
-```
-
-#### dexh1\_http\_field
-
-```c
-typedef struct
-{
-  char* name;
-  char* value;
-
-  int name_length;
-  int value_length;
-} dexh1_http_field;
-```
-
-#### Manipulation of hash table
-
-```c
-dexh1_http_field dexh1_get_field(dexh1_hash_table_t* ht, char* name, int length);
-void dexh1_insert_field(dexh1_hash_table_t* ht, dexh1_http_field value);
-void dexh1_delete_field(dexh1_hash_table_t* ht, char* name, int length);
 ```
