@@ -2,8 +2,8 @@ LIBNAME =             dexh1
 STATIC_LIB :=         lib${LIBNAME}.a
 SHARED_LIB :=         lib${LIBNAME}.so
 
-SRC :=                $(wildcard *.c)
-SRC_HEADERS :=        $(wildcard *.h)
+SRC :=                $(wildcard src/*.c)
+SRC_HEADERS :=        $(wildcard src/*.h)
 OBJS :=               $(patsubst %.c, %.o, ${SRC})
 
 PREFIX :=             /usr/local
@@ -43,7 +43,7 @@ ${STATIC_LIB}: ${OBJS}
 
 	ar rcs ${BUILD_LIB_PATH}/$@ ${OBJS}
 
-	rm -rf *.o
+	rm -rf ${OBJS}
 
 %.o: %.c
 	${CC} ${LDFLAGS} ${CFLAGS} ${SAFEFLAGS} -static -c $< -o $@
@@ -54,6 +54,6 @@ ${SHARED_LIB}: ${SRC}
 	${CC} ${LDFLAGS} ${CFLAGS} ${SAFEFLAGS} -shared -fPIC -o ${BUILD_LIB_PATH}/$@ $^
 
 clean:
-	rm -rf *.o ./build
+	rm -rf ${OBJS} ./build
 
-.PHONY: all clean install uninstall test*
+.PHONY: all clean install uninstall test
