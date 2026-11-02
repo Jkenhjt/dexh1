@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <string.h>
-#include "hash_table.h" /* Implements hash table functionality (inserting, extracting and deleting). */
+#include "hash_table.h"
 
 typedef struct
 {
@@ -14,9 +14,9 @@ typedef struct
 } dexh1_http;
 
 
-void init_dexh1(dexh1_http* var);                                               /* Initialization function. */
-void dexh1_request_parser(dexh1_http* req, char* buff, int headers_length);     /* Processing request header. */
-void dexh1_response_parser(dexh1_http* req, char* buff, int headers_length);    /* Processing response header. */
+void InitDexh1(dexh1_http* var);                                               /* Initialization function. */
+void Dexh1RequestParser(dexh1_http* req, char* buff, int headers_length);      /* Processing request header. */
+void Dexh1ResponseParser(dexh1_http* req, char* buff, int headers_length);     /* Processing response header. */
 
 #ifdef __cplusplus
 }

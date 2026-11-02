@@ -31,23 +31,23 @@ clock_t test_get_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
-  accept = dexh1_get_field(&req.ht, "Accept", 6);
-  user_agent = dexh1_get_field(&req.ht, "User-Agent", 10);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
+  accept = Dexh1GetField(&req.ht, "Accept", 6);
+  user_agent = Dexh1GetField(&req.ht, "User-Agent", 10);
 
-  assert(strncmp(method.value, "GET", method.value_length) == 0);
-  assert(strncmp(path.value, "/api/v1/users", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "api.example.com", host.value_length) == 0);
-  assert(strncmp(accept.value, "application/json", accept.value_length) == 0);
-  assert(strncmp(user_agent.value, "ParserTestClient/1.0", user_agent.value_length) == 0);
+  assert(strncmp(method.value.value, "GET", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "/api/v1/users", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "api.example.com", host.value.value_length) == 0);
+  assert(strncmp(accept.value.value, "application/json", accept.value.value_length) == 0);
+  assert(strncmp(user_agent.value.value, "ParserTestClient/1.0", user_agent.value.value_length) == 0);
   
   t2 = clock();
 
@@ -63,27 +63,27 @@ clock_t test_post_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
-  content_type = dexh1_get_field(&req.ht, "Content-Type", 12);
-  content_length = dexh1_get_field(&req.ht, "Content-Length", 14);
-  authorization = dexh1_get_field(&req.ht, "Authorization", 13);
-  message_body = dexh1_get_field(&req.ht, "message_body", 12);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
+  content_type = Dexh1GetField(&req.ht, "Content-Type", 12);
+  content_length = Dexh1GetField(&req.ht, "Content-Length", 14);
+  authorization = Dexh1GetField(&req.ht, "Authorization", 13);
+  message_body = Dexh1GetField(&req.ht, "message_body", 12);
   
-  assert(strncmp(method.value, "POST", method.value_length) == 0);
-  assert(strncmp(path.value, "/api/v1/users", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "api.example.com", host.value_length) == 0);
-  assert(strncmp(content_type.value, "application/json", content_type.value_length) == 0);
-  assert(strncmp(content_length.value, "38", content_length.value_length) == 0);
-  assert(strncmp(authorization.value, "Bearer eyJhbGciOi...", authorization.value_length) == 0);
-  assert(strncmp(message_body.value, "{\"name\": \"Charlie\", \"role\": \"admin\"}", message_body.value_length) == 0);
+  assert(strncmp(method.value.value, "POST", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "/api/v1/users", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "api.example.com", host.value.value_length) == 0);
+  assert(strncmp(content_type.value.value, "application/json", content_type.value.value_length) == 0);
+  assert(strncmp(content_length.value.value, "38", content_length.value.value_length) == 0);
+  assert(strncmp(authorization.value.value, "Bearer eyJhbGciOi...", authorization.value.value_length) == 0);
+  assert(strncmp(message_body.value.value, "{\"name\": \"Charlie\", \"role\": \"admin\"}", message_body.value.value_length) == 0);
 
   t2 = clock();
 
@@ -99,25 +99,25 @@ clock_t test_patch_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
-  content_type = dexh1_get_field(&req.ht, "Content-Type", 12);
-  content_length = dexh1_get_field(&req.ht, "Content-Length", 14);
-  message_body = dexh1_get_field(&req.ht, "message_body", 12);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
+  content_type = Dexh1GetField(&req.ht, "Content-Type", 12);
+  content_length = Dexh1GetField(&req.ht, "Content-Length", 14);
+  message_body = Dexh1GetField(&req.ht, "message_body", 12);
   
-  assert(strncmp(method.value, "PATCH", method.value_length) == 0);
-  assert(strncmp(path.value, "/api/v1/users/3", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "api.example.com", host.value_length) == 0);
-  assert(strncmp(content_type.value, "application/json", content_type.value_length) == 0);
-  assert(strncmp(content_length.value, "21", content_length.value_length) == 0);
-  assert(strncmp(message_body.value, "{\"role\": \"moderator\"}", message_body.value_length) == 0);
+  assert(strncmp(method.value.value, "PATCH", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "/api/v1/users/3", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "api.example.com", host.value.value_length) == 0);
+  assert(strncmp(content_type.value.value, "application/json", content_type.value.value_length) == 0);
+  assert(strncmp(content_length.value.value, "21", content_length.value.value_length) == 0);
+  assert(strncmp(message_body.value.value, "{\"role\": \"moderator\"}", message_body.value.value_length) == 0);
   
   t2 = clock();
 
@@ -133,21 +133,21 @@ clock_t test_delete_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
-  authorization = dexh1_get_field(&req.ht, "Authorization", 13);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
+  authorization = Dexh1GetField(&req.ht, "Authorization", 13);
 
-  assert(strncmp(method.value, "DELETE", method.value_length) == 0);
-  assert(strncmp(path.value, "/api/v1/users/3", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "api.example.com", host.value_length) == 0);
-  assert(strncmp(authorization.value, "Bearer eyJhbGciOi...", authorization.value_length) == 0);
+  assert(strncmp(method.value.value, "DELETE", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "/api/v1/users/3", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "api.example.com", host.value.value_length) == 0);
+  assert(strncmp(authorization.value.value, "Bearer eyJhbGciOi...", authorization.value.value_length) == 0);
   
   t2 = clock();
 
@@ -164,25 +164,25 @@ clock_t test_options_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
-  origin = dexh1_get_field(&req.ht, "Origin", 6);
-  access_control_request_method = dexh1_get_field(&req.ht, "Authorization", 13);
-  access_control_request_headers = dexh1_get_field(&req.ht, "Access-Control-Request-Headers", 12);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
+  origin = Dexh1GetField(&req.ht, "Origin", 6);
+  access_control_request_method = Dexh1GetField(&req.ht, "Authorization", 13);
+  access_control_request_headers = Dexh1GetField(&req.ht, "Access-Control-Request-Headers", 12);
   
-  assert(strncmp(method.value, "OPTIONS", method.value_length) == 0);
-  assert(strncmp(path.value, "/api/v1/users", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "api.example.com", host.value_length) == 0);
-  assert(strncmp(origin.value, "https://app.example.com", origin.value_length) == 0);
-  assert(strncmp(access_control_request_method.value, "POST", access_control_request_method.value_length) == 0);
-  assert(strncmp(access_control_request_headers.value, "Content-Type, Authorization", access_control_request_headers.value_length) == 0);
+  assert(strncmp(method.value.value, "OPTIONS", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "/api/v1/users", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "api.example.com", host.value.value_length) == 0);
+  assert(strncmp(origin.value.value, "https://app.example.com", origin.value.value_length) == 0);
+  assert(strncmp(access_control_request_method.value.value, "POST", access_control_request_method.value.value_length) == 0);
+  assert(strncmp(access_control_request_headers.value.value, "Content-Type, Authorization", access_control_request_headers.value.value_length) == 0);
   
   t2 = clock();
 
@@ -199,19 +199,19 @@ clock_t test_head_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
 
-  assert(strncmp(method.value, "HEAD", method.value_length) == 0);
-  assert(strncmp(path.value, "/downloads/large-file.zip", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "files.example.com", host.value_length) == 0);
+  assert(strncmp(method.value.value, "HEAD", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "/downloads/large-file.zip", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "files.example.com", host.value.value_length) == 0);
 
   t2 = clock();
 
@@ -228,21 +228,21 @@ clock_t test_trace_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
-  max_forwards = dexh1_get_field(&req.ht, "Max-Forwards", 12);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
+  max_forwards = Dexh1GetField(&req.ht, "Max-Forwards", 12);
 
-  assert(strncmp(method.value, "TRACE", method.value_length) == 0);
-  assert(strncmp(path.value, "/api/v1/status", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "api.example.com", host.value_length) == 0);
-  assert(strncmp(max_forwards.value, "0", max_forwards.value_length) == 0);
+  assert(strncmp(method.value.value, "TRACE", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "/api/v1/status", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "api.example.com", host.value.value_length) == 0);
+  assert(strncmp(max_forwards.value.value, "0", max_forwards.value.value_length) == 0);
 
   t2 = clock();
 
@@ -258,21 +258,21 @@ clock_t test_connect_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
-  proxy_authorization = dexh1_get_field(&req.ht, "Proxy-Authorization", 12);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
+  proxy_authorization = Dexh1GetField(&req.ht, "Proxy-Authorization", 12);
 
-  assert(strncmp(method.value, "CONNECT", method.value_length) == 0);
-  assert(strncmp(path.value, "secure.example.com:443", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "secure.example.com:443", host.value_length) == 0);
-  assert(strncmp(proxy_authorization.value, "application/json", proxy_authorization.value_length) == 0);
+  assert(strncmp(method.value.value, "CONNECT", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "secure.example.com:443", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "secure.example.com:443", host.value.value_length) == 0);
+  assert(strncmp(proxy_authorization.value.value, "application/json", proxy_authorization.value.value_length) == 0);
 
   t2 = clock();
 
@@ -289,25 +289,25 @@ clock_t test_put_request()
   clock_t t2;
 
   t1 = clock();
-  init_dexh1(&req);
+  InitDexh1(&req);
 
-  dexh1_request_parser(&req, http, sizeof(http) - 1);
+  Dexh1RequestParser(&req, http, sizeof(http) - 1);
 
-  method = dexh1_get_field(&req.ht, "method", 6);
-  path = dexh1_get_field(&req.ht, "path", 4);
-  http_version = dexh1_get_field(&req.ht, "http_version", 12);
-  host = dexh1_get_field(&req.ht, "Host", 4);
-  content_type = dexh1_get_field(&req.ht, "Content-Type", 12);
-  content_length = dexh1_get_field(&req.ht, "Content-Length", 14);
-  message_body = dexh1_get_field(&req.ht, "message_body", 12);
+  method = Dexh1GetField(&req.ht, "method", 6);
+  path = Dexh1GetField(&req.ht, "path", 4);
+  http_version = Dexh1GetField(&req.ht, "http_version", 12);
+  host = Dexh1GetField(&req.ht, "Host", 4);
+  content_type = Dexh1GetField(&req.ht, "Content-Type", 12);
+  content_length = Dexh1GetField(&req.ht, "Content-Length", 14);
+  message_body = Dexh1GetField(&req.ht, "message_body", 12);
 
-  assert(strncmp(method.value, "PUT", method.value_length) == 0);
-  assert(strncmp(path.value, "/api/v1/users/3", path.value_length) == 0);
-  assert(strncmp(http_version.value, "HTTP/1.1", http_version.value_length) == 0);
-  assert(strncmp(host.value, "api.example.com", host.value_length) == 0);
-  assert(strncmp(content_type.value, "application/json", content_type.value_length) == 0);
-  assert(strncmp(content_length.value, "43", content_length.value_length) == 0);
-  assert(strncmp(message_body.value, "{\"name\": \"Charles\", \"role\": \"superadmin\"}", message_body.value_length) == 0);
+  assert(strncmp(method.value.value, "PUT", method.value.value_length) == 0);
+  assert(strncmp(path.value.value, "/api/v1/users/3", path.value.value_length) == 0);
+  assert(strncmp(http_version.value.value, "HTTP/1.1", http_version.value.value_length) == 0);
+  assert(strncmp(host.value.value, "api.example.com", host.value.value_length) == 0);
+  assert(strncmp(content_type.value.value, "application/json", content_type.value.value_length) == 0);
+  assert(strncmp(content_length.value.value, "43", content_length.value.value_length) == 0);
+  assert(strncmp(message_body.value.value, "{\"name\": \"Charles\", \"role\": \"superadmin\"}", message_body.value.value_length) == 0);
   
   t2 = clock();
 
