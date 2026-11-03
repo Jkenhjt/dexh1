@@ -15,8 +15,6 @@
 | **Memory Strategy** | Zero-copy, zero dynamic allocation (no malloc) |
 | **Lookup Engine** | Hash Tables |
 
----
-
 ## Quickstart
 
 ### Building
@@ -38,8 +36,6 @@ make install PREFIX={path}
 ```
 
 ## Usage
-
----
 
 ### Example
 
