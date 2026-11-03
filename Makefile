@@ -26,6 +26,11 @@ test: ${STATIC_LIB} ${SRC_HEADERS}
 
 	rm test_request test_response
 
+bench: ${STATIC_LIB} ${SRC_HEADERS}
+	${CC} ${LDFLAGS} ${CFLAGS} ${SAFEFLAGE} examples/benchmark.c -I./build/include -L./build/lib -ldexh1 -static -o benchmark
+
+	./benchmark
+
 install: ${STATIC_LIB} ${SHARED_LIB}
 	mkdir -p ${PREFIX}/include/${LIBNAME}
 
@@ -58,6 +63,6 @@ ${SHARED_LIB}: ${SRC}
 	${CC} ${LDFLAGS} ${CFLAGS} ${SAFEFLAGS} -shared -fPIC -o ${BUILD_LIB_PATH}/$@ $^
 
 clean:
-	rm -rf ${OBJS} ./build
+	rm -rf ${OBJS} build benchmark
 
-.PHONY: all clean install uninstall test
+.PHONY: all clean install uninstall test bench
