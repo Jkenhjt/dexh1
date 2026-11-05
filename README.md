@@ -10,8 +10,8 @@
 | :--- | :--- |
 | **Language** | C (C90 compliant) |
 | **Supported Protocols** | HTTP/1.0, HTTP/1.1 |
-| **Static Library Size** | ~7.7 KB |
-| **Max Headers Number** | 100 fields per struct |
+| **Static Library Size** | ~11.6 KB |
+| **Max Headers Number** | 128 fields per struct |
 | **Memory Strategy** | Zero-copy, zero dynamic allocation (no malloc) |
 | **Lookup Engine** | Hash Tables |
 
