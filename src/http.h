@@ -6,6 +6,8 @@ extern "C" {
 #endif
 
 #include <string.h>
+#include <stdio.h>
+#include <assert.h>
 #include "hash_table.h"
 
 typedef struct

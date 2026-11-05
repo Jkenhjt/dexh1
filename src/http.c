@@ -1,52 +1,101 @@
 #include "http.h"
 
 
-int Dexh1IdxDelim(void* pointer, int delim)
+int Dexh1IdxDelim192(void* pointer, int delim)
 {
   /* Fast search char without simd.
    * Using ctzll (count trailing zeros long long) function for count
    * is char in size_t variable and on what position.
-   * Decreases count of loops, because scans sizeof(size_t) bytes per call
+   * Decreases count of loops, because scans sizeof(size_t) * 3 bytes per call
    */
 
   size_t mask_delim;
-  size_t result;
-  size_t data;
-  memcpy(&data, pointer, sizeof(size_t));
+  size_t data0 = 0;
+  size_t data1 = 0;
+  size_t data2 = 0;
+
+  memcpy(&data0, pointer, sizeof(size_t));
+  memcpy(&data1, (char*) pointer+8, sizeof(size_t));
+  memcpy(&data2, (char*) pointer+16, sizeof(size_t));
 
   mask_delim = (0x0101010101010101) * delim;
-  result = data ^ mask_delim;
+  data0 = data0 ^ mask_delim;
+  data1 = data1 ^ mask_delim;
+  data2 = data2 ^ mask_delim;
 
-  result = (result - 0x0101010101010101) & ~result & 0x8080808080808080;
-  
-  if(result == 0)
+  data0 = (data0 - 0x0101010101010101) & ~data0 & 0x8080808080808080;
+  data1 = (data1 - 0x0101010101010101) & ~data1 & 0x8080808080808080;
+  data2 = (data2 - 0x0101010101010101) & ~data2 & 0x8080808080808080;
+
+  if(data0 != 0)
+  {
+    return __builtin_ctzll(data0) / sizeof(size_t);
+  }
+  if(data1 != 0)
+  {
+    return __builtin_ctzll(data1) / sizeof(size_t) + 8;
+  }
+  if(data2 != 0)
+  {
+    return __builtin_ctzll(data2) / sizeof(size_t) + 16;
+  }
+
+  return -1;
+}
+
+int Dexh1IdxDelim(char* pointer, char delim, int length_eof)
+{
+  char* p = (char*) pointer;
+  char* eof = p + length_eof - 1;
+  int result = 0;
+
+  if(length_eof >= sizeof(size_t) * 3)
+  {
+    do
+    {
+      result = Dexh1IdxDelim192(p, delim);
+
+      if(result == -1)
+      {
+        p += sizeof(size_t) * 3;
+        continue;
+      }
+      break;
+    }
+    while(p < eof);
+
+    p += result;
+
+    if(result != -1)
+    {
+      return p - (char*) pointer;
+    }
+  }
+
+  while(*p++ != delim && p != eof)
+  {
+  }
+
+  if(p == eof)
   {
     return -1;
   }
-  
-  return __builtin_ctzll(result) / sizeof(size_t);
+
+  return p - (char*) pointer - 1;
 }
 
-int Dexh1LengthField(char* buff, int length, char delim, int* idx)
+int Dexh1LengthField(char* buff, int length, char delim, int idx)
 {
   int result = 0;
-  int field_length = 0;
-  
-  while(*idx < length)
+
+  result = Dexh1IdxDelim(&buff[idx], delim, length - idx);
+
+  if(result == -1)
   {
-    result = Dexh1IdxDelim(&buff[*idx], delim);
-    if(result != -1)
-    {
-      *idx += result+1;
-      field_length += result;
-	    break;
-    }
-    
-    *idx += sizeof(size_t);
-    field_length += sizeof(size_t);
+    return -1;
   }
 
-  return field_length;
+  return result;
 }
 
 void Dexh1MethodRequest(dexh1_http* req, char* buff, int length)
@@ -65,17 +114,26 @@ void Dexh1MethodRequest(dexh1_http* req, char* buff, int length)
   /* Finding method. */
 
   method = &buff[idx];
-  method_length = Dexh1LengthField(buff, length, ' ', &idx);
+  method_length = Dexh1LengthField(buff, length, ' ', idx);
+  idx += method_length + 1;
+
+  assert(method_length != -1);
 
   /* Findg path. */
 
   path = &buff[idx];
-  path_length = Dexh1LengthField(buff, length, ' ', &idx);
-  
+  path_length = Dexh1LengthField(buff, length, ' ', idx);
+  idx += path_length + 1;
+
+  assert(path_length != -1);
+
   /* Finding http version. */
 
   http_version = &buff[idx];
-  http_version_length = Dexh1LengthField(buff, length, '\r', &idx);
+  http_version_length = Dexh1LengthField(buff, length, '\r', idx);
+  idx += http_version_length + 1;
+
+  assert(method_length != -1);
  
   /* Inserting all previous parsed data into hash table. */
 
@@ -115,20 +173,24 @@ void Dexh1MethodResponse(dexh1_http** req, char* buff, int length)
   /* Finding http version. */
 
   http_version = &buff[idx];
-  http_version_length = Dexh1LengthField(buff, length, ' ', &idx);
+  http_version_length = Dexh1LengthField(buff, length, ' ', idx);
+  idx += http_version_length + 1;
+
 
   /* Finding status code. */
 
   status_code = &buff[idx];
-  status_code_length = Dexh1LengthField(buff, length, ' ', &idx);
+  status_code_length = Dexh1LengthField(buff, length, ' ', idx);
+  idx += status_code_length + 1;
 
   /* Finding status message (if exist). */
-  
+
   status_message = &buff[idx];
-  status_message_length = Dexh1LengthField(buff, length, '\r', &idx);
-  
+  status_message_length = Dexh1LengthField(buff, length, '\r', idx);
+  idx += status_message_length + 1;
+
   /* Inserting all previous parsed data into hash table. */
-  
+
   http_version_.name.name = "http_version";
   http_version_.name.name_length = 12;
   http_version_.value.value = http_version;
@@ -154,27 +216,28 @@ void Dexh1FindFields(int headers_length, dexh1_http* req, char* buff)
   dexh1_name name;
   dexh1_value value;
   dexh1_http_field field;
-  
+
   int result = 0;
   int i = 0;
   while(i < headers_length)
   {
-    result = Dexh1IdxDelim(&buff[i], '\r');
+    result = Dexh1IdxDelim(buff+i, '\r', headers_length-i);
     if(result == -1)
     {
-      i += sizeof(size_t);
-      continue;
+      break;
     }
 
-    i += result + 2;
+    i += result;
 
     if(buff[i] == '\r')
     {
+      name.name = "message_box";
+      name.name_length = 12;
+
       value.value = buff+i+2;
-      value.value_length = headers_length - i;
-      
-      field.name.name = "message_body";
-      field.name.name_length = 12;
+      value.value_length = headers_length - (i + 2);
+
+      field.name = name;
       field.value = value;
 
       Dexh1InsertField(&req->ht, field);
@@ -182,21 +245,34 @@ void Dexh1FindFields(int headers_length, dexh1_http* req, char* buff)
       break;
     }
 
+    i++;
+
     name.name = buff+i;
     name.name_length = i;
 
-    result = Dexh1LengthField(&buff[i], headers_length, ':', &i);
+    result = Dexh1LengthField(buff, headers_length, ':', i);
 
-    name.name_length = i - name.name_length;
-    
-    i += 2;
- 
+    if(result == -1)
+    {
+      continue;
+    }
+
+    name.name_length = result;
+
+    i += result + 2;
+
     value.value = buff+i;
     value.value_length = i;
 
-    result = Dexh1LengthField(&buff[i], headers_length, '\r', &i);
+    result = Dexh1LengthField(buff, headers_length, '\r', i);
 
-    value.value_length = i - value.value_length;
+    if(result == -1)
+    {
+      continue;
+    }
+
+    value.value_length = result;
+    i += result;
 
     field.name = name;
     field.value = value;
@@ -208,14 +284,14 @@ void Dexh1FindFields(int headers_length, dexh1_http* req, char* buff)
 void Dexh1RequestParser(dexh1_http* req, char* buff, int headers_length)
 {
   Dexh1MethodRequest(req, buff, headers_length);
-  
+
   Dexh1FindFields(headers_length, req, buff);
 }
 
 void Dexh1ResponseParser(dexh1_http* resp, char* buff, int headers_length)
 {
   Dexh1MethodResponse(&resp, buff, headers_length);
-  
+
   Dexh1FindFields(headers_length, resp, buff);
 }
 
